@@ -59,7 +59,7 @@ class ParseField:
 class TemplateDb:
     _field_by_name: Dict[str, ParseField] = {}
 
-    def __init__(self, fields: List[ParseField]):
+    def __init__(self, fields: List[ParseField]) -> None:
         self._field_by_name = {field.name: field for field in fields}
 
     def get_field(self, name: str) -> ParseField:
@@ -111,10 +111,11 @@ class BeautifyIpmDb:
     ) -> List[List[TypeIpmDb]]:
 
         parse_db: List[List[TypeIpmDb]] = []
+        parse_db_append = parse_db.append
 
         for message in self.elements:
             if message["MTI"] == "1240":
-                parse_db.append(self._loop_element(message=message))
+                parse_db_append(self._loop_element(message=message))
 
         return parse_db
 
@@ -124,6 +125,7 @@ class BeautifyIpmDb:
     ) -> List[TypeIpmDb]:
 
         parse_elements: List[TypeIpmDb] = []
+        parse_elements_append = parse_elements.append
 
         for element in self._DATA_ELEMENTS_MESSAGE:
             key: str = element[1]
@@ -132,7 +134,7 @@ class BeautifyIpmDb:
                 message=message, name=value, type_element=key
             )
 
-            parse_elements.append(data_element)
+            parse_elements_append(data_element)
 
         return parse_elements
 
@@ -141,7 +143,7 @@ class BeautifyIpmDb:
         message: Dict[str, Any],
         name: str,
         type_element: str,
-    ) -> Optional[Any]:
+    ) -> TypeIpmDb:
 
         data_element: Optional[str] = None
 

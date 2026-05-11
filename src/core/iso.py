@@ -96,6 +96,8 @@ class MastercardIso8583Parse(FilesDataSaving):
 
         print_custom_text(text=body, highlight=["Bold"], color_foreground="OrangeRed1")
 
+        return None
+
     def search_ipm(self, date_file: str, cycle: TypeCycleIpm) -> None:
 
         self._file_infos: Optional[TupleManagerFile] = file_search(

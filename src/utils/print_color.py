@@ -19,6 +19,8 @@ def print_custom_text(
 
     print(f"{reset}{hgl}{color_fg}{color_bg}{text}{reset}", sep=sep, end=end)
 
+    return None
+
 
 if __name__ == "__main__":
     print_custom_text("HEITOR", highlight=["Bold"], color_background="Orange1")

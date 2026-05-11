@@ -116,7 +116,7 @@ class DbOutgouing:
                 parse=arq_parse,
             )
 
-            return None
+        return None
 
     def _exists_file_master(self, file_name: str) -> bool:
 
@@ -194,3 +194,5 @@ class DbOutgouing:
                 date_reference=date_reference,
                 parse=parse,
             )
+
+        return None

@@ -35,6 +35,8 @@ class FilesDataSaving:
             if headers:
                 writer.writerows(data)
 
+        return None
+
     def _save_txt(self, data: TypeIpm, file_name: str) -> None:
 
         with open(
@@ -43,6 +45,8 @@ class FilesDataSaving:
             for i in data:
                 json_dict = json.dumps(i, indent=4, ensure_ascii=False)
                 arquivo.write(f"{json_dict}\n")
+
+        return None
 
 
 if __name__ == "__main__":

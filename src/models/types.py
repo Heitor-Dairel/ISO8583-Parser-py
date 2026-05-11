@@ -1,6 +1,6 @@
 from typing import Any, Dict, List, Literal, NamedTuple, Optional, Tuple, TypeVar, Union
 
-type TypeIpmDb = Union[int, str, float, None]
+type TypeIpmDb = Optional[Union[int, str, float]]
 type TypeIpm = List[Dict[str, Any]]
 type TypeParseIpm = Optional[Tuple[TypeIpm, str]]
 type TypeCycleIpm = Literal["CIC1", "CIC2", "CIC3"]
