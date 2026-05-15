@@ -143,7 +143,7 @@ class DbOutgouing:
             for idx, row in enumerate(rows):
                 print_custom_text(
                     row,
-                    color_foreground="Chartreuse1",
+                    color_foreground="Red",
                     end="",
                 )
                 if not idx:
@@ -198,7 +198,7 @@ class DbOutgouing:
             for idx, row in enumerate(rows):
                 print_custom_text(
                     row,
-                    color_foreground="Chartreuse1",
+                    color_foreground="Red",
                     end="",
                 )
                 if not idx:

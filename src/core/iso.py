@@ -1,6 +1,8 @@
 from typing import Any, Dict, Final, List, Optional, Tuple
 
+import pyfiglet
 from starkbank import iso8583
+from term_image.image import BaseImage, from_file
 
 from ..helpers import (
     FilesDataLogging,
@@ -27,24 +29,16 @@ class ISO8583ParseError(Exception): ...
 
 
 class MastercardIso8583Parse(FilesDataLogging):
-    _TITLE: Final[str] = """
-    ███╗   ███╗ █████╗ ███████╗████████╗███████╗██████╗  ██████╗ █████╗ ██████╗ ██████╗     ██████╗  █████╗ ██████╗ ███████╗███████╗
-    ████╗ ████║██╔══██╗██╔════╝╚══██╔══╝██╔════╝██╔══██╗██╔════╝██╔══██╗██╔══██╗██╔══██╗    ██╔══██╗██╔══██╗██╔══██╗██╔════╝██╔════╝
-    ██╔████╔██║███████║███████╗   ██║   █████╗  ██████╔╝██║     ███████║██████╔╝██║  ██║    ██████╔╝███████║██████╔╝███████╗█████╗  
-    ██║╚██╔╝██║██╔══██║╚════██║   ██║   ██╔══╝  ██╔══██╗██║     ██╔══██║██╔══██╗██║  ██║    ██╔═══╝ ██╔══██║██╔══██╗╚════██║██╔══╝  
-    ██║ ╚═╝ ██║██║  ██║███████║   ██║   ███████╗██║  ██║╚██████╗██║  ██║██║  ██║██████╔╝    ██║     ██║  ██║██║  ██║███████║███████╗
-    ╚═╝     ╚═╝╚═╝  ╚═╝╚══════╝   ╚═╝   ╚══════╝╚═╝  ╚═╝ ╚═════╝╚═╝  ╚═╝╚═╝  ╚═╝╚═════╝     ╚═╝     ╚═╝  ╚═╝╚═╝  ╚═╝╚══════╝╚══════╝
-    ██╗███████╗ ██████╗      █████╗ ███████╗ █████╗ ██████╗        ██╗ █████╗  █████╗ ██████╗ 
-    ██║██╔════╝██╔═══██╗    ██╔══██╗██╔════╝██╔══██╗╚════██╗      ███║██╔══██╗██╔══██╗╚════██╗
-    ██║███████╗██║   ██║    ╚█████╔╝███████╗╚█████╔╝ █████╔╝█████╗╚██║╚██████║╚██████║ █████╔╝
-    ██║╚════██║██║   ██║    ██╔══██╗╚════██║██╔══██╗ ╚═══██╗╚════╝ ██║ ╚═══██║ ╚═══██║ ╚═══██╗
-    ██║███████║╚██████╔╝    ╚█████╔╝███████║╚█████╔╝██████╔╝       ██║ █████╔╝ █████╔╝██████╔╝
-    ╚═╝╚══════╝ ╚═════╝      ╚════╝ ╚══════╝ ╚════╝ ╚═════╝        ╚═╝ ╚════╝  ╚════╝ ╚═════╝ \n"""
+    _TITLE: Final[str] = pyfiglet.figlet_format(
+        " MASTERCARD PARSE\n", font="ansi_shadow", width=200
+    ) + pyfiglet.figlet_format(" ISO 8583-1993", font="ansi_shadow", width=200)
+
+    _PATH: str = r"src\img\mastercard_logo.png"
 
     _RESET: Final[str] = "\x1b[0m"
     _BOLD: Final[str] = HIGHLIGHT["Bold"]
     _COLOR_DEFAULT: Final[str] = FG_COLORS_SEARCH["White"]
-    _COLOR_CUSTOM: Final[str] = FG_COLORS_SEARCH["Chartreuse1"]
+    _COLOR_CUSTOM: Final[str] = FG_COLORS_SEARCH["Red"]
     _HEADER_CONTOUR: Final[str] = (
         f"{_RESET}{_BOLD}{_COLOR_CUSTOM}╔══════════════════════════════════════════════════════════════════════╗{_RESET}\n"
     )
@@ -72,10 +66,13 @@ class MastercardIso8583Parse(FilesDataLogging):
         self._file_date: Optional[str] = None
         self._cycle: Optional[str] = None
 
+        img: BaseImage = from_file(filepath=self._PATH)
+        img.set_size(width=20)
+        img.set_size(height=10)
+        print(str(img).rstrip(), end="\n")
+
         print_custom_text(
-            text=self._TITLE,
-            highlight=["Bold"],
-            color_foreground="Chartreuse1",
+            text=self._TITLE, highlight=["Bold"], color_foreground="Orange1", end="\n"
         )
 
     def _extract_iso_payload(

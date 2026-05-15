@@ -13,8 +13,10 @@ dependencies = [
     "polars>=1.40.1",
     "psycopg>=3.3.3",
     "psycopg-binary>=3.3.3",
+    "pyfiglet>=1.0.4",
     "rich>=14.3.3",
     "starkbank-iso8583>=0.6.1",
+    "term-image>=0.7.2",
 ]
 
 [tool.pyright]
