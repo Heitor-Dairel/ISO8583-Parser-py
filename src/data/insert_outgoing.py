@@ -225,7 +225,7 @@ class DbOutgouing:
 
             self.__logging(
                 data={"file_name": file_name, "row_count_insert": row_count_insert},
-                model="select",
+                model="insert",
             )
 
         except Exception as e:
