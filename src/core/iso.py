@@ -39,6 +39,9 @@ class MC8583(DataLogging):
     _BOLD: Final[str] = HIGHLIGHT["Bold"]
     _COLOR_DEFAULT: Final[str] = FG_COLORS_SEARCH["White"]
     _COLOR_CUSTOM: Final[str] = FG_COLORS_SEARCH["Red"]
+    _PARTING: Final[str] = (
+        f"{_RESET}{_BOLD}{_COLOR_CUSTOM}══════════════════════════════════ ◆ ═══════════════════════════════════{_RESET}\n"
+    )
     _HEADER_CONTOUR: Final[str] = (
         f"{_RESET}{_BOLD}{_COLOR_CUSTOM}╔══════════════════════════════════════════════════════════════════════╗{_RESET}\n"
     )
@@ -67,7 +70,7 @@ class MC8583(DataLogging):
         self._cycle: Optional[str] = None
 
         img: BaseImage = from_file(filepath=self._PATH)
-        img.set_size(width=30, height=10)
+        img.set_size(width=34, height=10)
         print(str(img).rstrip(), end="\n")
 
         print_custom_text(
@@ -139,19 +142,19 @@ class MC8583(DataLogging):
 
         rows: List[str] = [
             f" ◉ 📄 File Name  {self._SIDE} {file_name}",
-            f" ◉ ⏳ File Date  {self._SIDE} {format_date(file_name=file_name)}",
+            f" ◉ 📄 File Date  {self._SIDE} {format_date(file_name=file_name)}",
             f" ◉ 📄 File Cycle {self._SIDE} {self._cycle}",
             f" ◉ 📄 File Size  {self._SIDE} {format_size(self._len_raw)}",
-            f" ◉ 🔢 File Row   {self._SIDE} {row_count_format}",
+            f" ◉ 📄 File Row   {self._SIDE} {row_count_format}",
         ]
 
-        body: str = ""
+        body: str = f"    {self._PARTING}\n"
 
         for idx, row in enumerate(rows):
             space = format_space(text1=self._HEADER, text2=row)
 
             if not idx:
-                body = (
+                body += (
                     f"    {self._HEADER_CONTOUR}"
                     f"    {self._SIDE_CONTOUR} {self._HEADER} {self._SIDE_CONTOUR}\n"
                     f"    {self._ROW_CUSTOM_INIT}{row + space}{self._ROW_CUSTOM_END}\n"

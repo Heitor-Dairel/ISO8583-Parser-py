@@ -1,6 +1,7 @@
 import os
 from datetime import datetime
-from typing import Dict, List, Literal, Optional, Tuple
+from types import TracebackType
+from typing import Callable, Dict, List, Literal, Optional, Self, Tuple
 
 import psycopg
 from dotenv import load_dotenv
@@ -16,17 +17,19 @@ from ..models import (
 )
 from ..utils import print_custom_text
 
-load_dotenv()
 
-host: Optional[str] = os.getenv("DB_HOST")
-port: Optional[str] = os.getenv("DB_PORT")
-db_name: Optional[str] = os.getenv("DB_NAME")
-user: Optional[str] = os.getenv("DB_USERNAME")
-password: Optional[str] = os.getenv("DB_PASSWORD")
+class DB8583:
+    load_dotenv()
+    _host: Optional[str] = os.getenv("DB_HOST")
+    _port: Optional[str] = os.getenv("DB_PORT")
+    _db_name: Optional[str] = os.getenv("DB_NAME")
+    _user: Optional[str] = os.getenv("DB_USERNAME")
+    _password: Optional[str] = os.getenv("DB_PASSWORD")
 
-
-class DbOutgouing:
-    _EXISTS_FILE = "SELECT 1 FROM hdg.tb_master_arquivo tma WHERE tma.nome_arquivo = %s"
+    _EXISTS_FILE = """SELECT 1 
+                        FROM hdg.tb_master_arquivo tma 
+                       WHERE tma.data_referencia = %s 
+                         AND tma.ciclo = %s"""
 
     _INSERT_SQL = """
     INSERT INTO hdg.tb_master_arquivo (nome_arquivo, ciclo, data_referencia) 
@@ -73,15 +76,26 @@ class DbOutgouing:
     """
 
     def __init__(self) -> None:
-        self._conn: Connection[TupleRow] = psycopg.connect(
-            host=host,
-            port=port,
-            dbname=db_name,
-            user=user,
-            password=password,
-        )
-        self._cur: ServerCursor[TupleRow] = self._conn.cursor()
+        self._conn: Optional[Connection[TupleRow]] = None
+        self._cur: Optional[ServerCursor[TupleRow]] = None
         self._parse: MC8583 = MC8583()
+
+    def __enter__(self) -> Self:
+        self.connect()
+        return self
+
+    def __exit__(
+        self,
+        exc_type: type[BaseException] | None,
+        exc_val: BaseException | None,
+        exc_tb: TracebackType | None,
+    ) -> None:
+
+        if exc_type and self._conn:
+            self._conn.rollback()
+
+        if exc_type is None:
+            self.close()
 
     def _date_reference_file(self, file_name: str) -> str:
 
@@ -92,6 +106,37 @@ class DbOutgouing:
         )
 
         return reference_date
+
+    def connect(
+        self,
+    ) -> Optional[ServerCursor[TupleRow]]:
+
+        if self._conn:
+            return self._cur
+
+        self._conn = psycopg.connect(
+            host=self._host,
+            port=self._port,
+            dbname=self._db_name,
+            user=self._user,
+            password=self._password,
+        )
+        self._cur = self._conn.cursor()
+        return self._cur
+
+    def close(
+        self,
+    ) -> None:
+
+        if self._conn and self._cur:
+            exec: List[Callable[[], None]] = [
+                self._conn.commit,
+                self._cur.close,
+                self._conn.close,
+            ]
+            for exe in exec:
+                exe()
+        self._conn, self._cur = None, None
 
     def iso_db(
         self,
@@ -177,19 +222,18 @@ class DbOutgouing:
                     )
             print("\n\n")
 
-    def _exists_file_master(self, file_name: str) -> bool:
+    def _exists_file_master(
+        self,
+        file_name: str,
+        cycle: str,
+        date_reference: str,
+    ) -> bool:
 
-        cur_result = self._cur.execute(self._EXISTS_FILE, (file_name,))
-
-        if cur_result.fetchone():
-            self._cur.close()
-
-            self._conn.close()
-
-            self.__logging(data={"file_name": file_name}, model="select")
-
-            return True
-
+        if self._conn and self._cur:
+            cur_result = self._cur.execute(self._EXISTS_FILE, (date_reference, cycle))
+            if cur_result.fetchone():
+                self.__logging(data={"file_name": file_name}, model="select")
+                return True
         return False
 
     def _insert_file_db(
@@ -202,40 +246,34 @@ class DbOutgouing:
 
         arq_parse = parse
 
-        try:
-            self._cur.executemany(
-                DbOutgouing._INSERT_SQL,
-                [(file_name, cycle, date_reference)],
-                returning=True,
-            )
+        if self._conn and self._cur:
+            try:
+                self._cur.executemany(
+                    query=DB8583._INSERT_SQL,
+                    params_seq=[(file_name, cycle, date_reference)],
+                    returning=True,
+                )
 
-            row_id: Optional[Tuple[int]] = self._cur.fetchone()
-            new_id = row_id[0] if row_id else 0
+                row_id: Optional[Tuple[int]] = self._cur.fetchone()
+                new_id = row_id[0] if row_id else 0
 
-            with self._cur.copy(DbOutgouing._COPY_SQL) as copy:
-                for row in arq_parse:
-                    row.append(new_id)
-                    copy.write_row(row)
+                with self._cur.copy(DB8583._COPY_SQL) as copy:
+                    for row in arq_parse:
+                        row.append(new_id)
+                        copy.write_row(row)
 
-            self._conn.commit()
-            self._cur.close()
-            self._conn.close()
+                row_count_insert: str = f"{len(arq_parse):,}".replace(",", ".")
 
-            row_count_insert: str = f"{len(arq_parse):,}".replace(",", ".")
+                self.__logging(
+                    data={"file_name": file_name, "row_count_insert": row_count_insert},
+                    model="insert",
+                )
 
-            self.__logging(
-                data={"file_name": file_name, "row_count_insert": row_count_insert},
-                model="insert",
-            )
-
-        except Exception as e:
-            self._conn.rollback()
-
-            self._cur.close()
-
-            self._conn.close()
-
-            print(f"Error: {e}")
+            except Exception as e:
+                self._conn.rollback()
+                self._cur.close()
+                self._conn.close()
+                print(f"Error: {e}")
 
         return None
 
@@ -247,7 +285,9 @@ class DbOutgouing:
         parse: List[List[TypeIpmDb]],
     ) -> None:
 
-        if not self._exists_file_master(file_name=file_name):
+        if not self._exists_file_master(
+            file_name=file_name, cycle=cycle, date_reference=date_reference
+        ):
             self._insert_file_db(
                 file_name=file_name,
                 cycle=cycle,

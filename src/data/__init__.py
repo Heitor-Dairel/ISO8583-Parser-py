@@ -1,3 +1,3 @@
-from .insert_outgoing import DbOutgouing
+from .isodb import DB8583
 
-__all__ = ["DbOutgouing"]
+__all__ = ["DB8583"]

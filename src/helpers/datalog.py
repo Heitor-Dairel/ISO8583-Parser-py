@@ -51,7 +51,7 @@ class DataLogging:
         ]
 
         df: DataFrame = pl.DataFrame(data=data_csv).unnest("PDS")
-
+        df.with_row_index("id")
         df.write_csv(
             self._output_path_abs / f"{file_name}.csv",
             separator=";",
