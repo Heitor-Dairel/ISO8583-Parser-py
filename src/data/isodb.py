@@ -26,7 +26,7 @@ class DB8583:
     _user: Optional[str] = os.getenv("DB_USERNAME")
     _password: Optional[str] = os.getenv("DB_PASSWORD")
 
-    _EXISTS_FILE = """SELECT 1 
+    _FILE_EXISTS_SQL = """SELECT 1 
                         FROM hdg.tb_master_arquivo tma 
                        WHERE tma.data_referencia = %s 
                          AND tma.ciclo = %s"""
@@ -97,16 +97,6 @@ class DB8583:
         if exc_type is None:
             self.close()
 
-    def _date_reference_file(self, file_name: str) -> str:
-
-        file_name_split: List[str] = file_name.split("_")
-
-        reference_date: str = datetime.strptime(file_name_split[-2], "%d%m%Y").strftime(
-            "%d/%m/%Y"
-        )
-
-        return reference_date
-
     def connect(
         self,
     ) -> Optional[ServerCursor[TupleRow]]:
@@ -140,15 +130,15 @@ class DB8583:
 
     def iso_db(
         self,
-        date_file: str,
+        file_date: str,
         cycle: TypeCycleIpm,
         logging: bool = True,
     ) -> None:
 
         file_name: Optional[str] = None
-        date_reference: Optional[str] = None
+        reference_date: Optional[str] = None
         arq_parse: Optional[List[List[TypeIpmDb]]] = None
-        self._parse.search_ipm(file_date=date_file, cycle=cycle)
+        self._parse.search_ipm(file_date=file_date, cycle=cycle)
 
         parse: TypeParseIpmDb = self._parse.parse_ipm_db(logging=logging)
 
@@ -157,18 +147,28 @@ class DB8583:
             file_name += ".TXT"
 
         if arq_parse and file_name:
-            date_reference = self._date_reference_file(file_name)
+            reference_date = self._file_reference_date(file_name)
 
             self._transaction_db(
                 file_name=file_name,
                 cycle=cycle,
-                date_reference=date_reference,
+                reference_date=reference_date,
                 parse=arq_parse,
             )
 
         return None
 
-    def __logging(
+    def _file_reference_date(self, file_name: str) -> str:
+
+        file_name_split: List[str] = file_name.split("_")
+
+        reference_date: str = datetime.strptime(file_name_split[-2], "%d%m%Y").strftime(
+            "%d/%m/%Y"
+        )
+
+        return reference_date
+
+    def _logging(
         self, data: Dict[str, str], model: Literal["insert", "select"]
     ) -> None:
 
@@ -226,15 +226,17 @@ class DB8583:
         self,
         file_name: str,
         cycle: str,
-        date_reference: str,
+        reference_date: str,
     ) -> bool:
 
         cur_result: Optional[ServerCursor] = None
 
         if self._conn and self._cur:
-            cur_result = self._cur.execute(self._EXISTS_FILE, (date_reference, cycle))
+            cur_result = self._cur.execute(
+                self._FILE_EXISTS_SQL, (reference_date, cycle)
+            )
             if cur_result.fetchone():
-                self.__logging(data={"file_name": file_name}, model="select")
+                self._logging(data={"file_name": file_name}, model="select")
                 return True
         return False
 
@@ -242,7 +244,7 @@ class DB8583:
         self,
         file_name: str,
         cycle: str,
-        date_reference: str,
+        reference_date: str,
         parse: List[List[TypeIpmDb]],
     ) -> None:
 
@@ -255,7 +257,7 @@ class DB8583:
             try:
                 self._cur.executemany(
                     query=DB8583._INSERT_SQL,
-                    params_seq=[(file_name, cycle, date_reference)],
+                    params_seq=[(file_name, cycle, reference_date)],
                     returning=True,
                 )
 
@@ -269,7 +271,7 @@ class DB8583:
 
                 row_count_insert = f"{len(arq_parse):,}".replace(",", ".")
 
-                self.__logging(
+                self._logging(
                     data={"file_name": file_name, "row_count_insert": row_count_insert},
                     model="insert",
                 )
@@ -286,17 +288,17 @@ class DB8583:
         self,
         file_name: str,
         cycle: str,
-        date_reference: str,
+        reference_date: str,
         parse: List[List[TypeIpmDb]],
     ) -> None:
 
         if not self._exists_file_master(
-            file_name=file_name, cycle=cycle, date_reference=date_reference
+            file_name=file_name, cycle=cycle, reference_date=reference_date
         ):
             self._insert_file_db(
                 file_name=file_name,
                 cycle=cycle,
-                date_reference=date_reference,
+                reference_date=reference_date,
                 parse=parse,
             )
 

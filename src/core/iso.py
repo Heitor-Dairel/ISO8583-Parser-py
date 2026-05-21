@@ -50,6 +50,58 @@ class MC8583(DataLogging):
             text=self._TITLE, highlight=["Bold"], color_foreground="Orange1", end="\n"
         )
 
+    def search_ipm(self, file_date: str, cycle: TypeCycleIpm) -> None:
+
+        self._file_date, self._cycle = file_date, cycle
+        self._file_infos: Optional[TupleManagerFile] = file_search(
+            file_date=file_date, cycle=cycle
+        )
+
+    def parse_ipm(
+        self,
+        logging: bool = True,
+    ) -> TypeParseIpm:
+
+        file_name: Optional[str] = None
+        file_bytes: Optional[memoryview] = None
+        parse_ipm: Optional[TypeIpm] = None
+        msg_count: Optional[int] = None
+        if self._file_infos:
+            file_name, file_bytes = self._file_infos
+            parse_ipm, msg_count = self._playload_ipm_file(raw=file_bytes)
+            if logging:
+                self._logging(file_name=file_name, row_count=msg_count, data=parse_ipm)
+
+            return parse_ipm, file_name
+
+        return None
+
+    def parse_ipm_db(
+        self,
+        logging: bool = True,
+    ) -> TypeParseIpmDb:
+
+        file_name: Optional[str] = None
+        file_bytes: Optional[memoryview] = None
+        parse_ipm: Optional[TypeIpm] = None
+        msg_count: Optional[int] = None
+
+        if self._file_infos:
+            file_name, file_bytes = self._file_infos
+            parse_ipm, msg_count = self._playload_ipm_file(raw=file_bytes)
+            if logging:
+                self._logging(file_name=file_name, row_count=msg_count, data=parse_ipm)
+
+            ipm_db: BeautifyIpmDb = BeautifyIpmDb(
+                template=mastercard_db, elements=parse_ipm
+            )
+
+            parse_db: List[List[TypeIpmDb]] = ipm_db.parse()
+
+            return parse_db, file_name
+
+        return None
+
     def _extract_iso_payload(
         self, raw: memoryview, index: int, len_raw: int
     ) -> Tuple[bytes, int]:
@@ -146,68 +198,3 @@ class MC8583(DataLogging):
         print(body)
 
         return None
-
-    def search_ipm(self, file_date: str, cycle: TypeCycleIpm) -> None:
-
-        self._file_date, self._cycle = file_date, cycle
-        self._file_infos: Optional[TupleManagerFile] = file_search(
-            file_date=file_date, cycle=cycle
-        )
-
-    def parse_ipm(
-        self,
-        logging: bool = True,
-    ) -> TypeParseIpm:
-
-        file_name: Optional[str] = None
-        bytes_file: Optional[memoryview] = None
-        parse_ipm: Optional[TypeIpm] = None
-        msg_count: Optional[int] = None
-        if self._file_infos:
-            file_name, bytes_file = self._file_infos
-            parse_ipm, msg_count = self._playload_ipm_file(raw=bytes_file)
-            if logging:
-                self._logging(file_name=file_name, row_count=msg_count, data=parse_ipm)
-
-            return parse_ipm, file_name
-
-        return None
-
-    def parse_ipm_db(
-        self,
-        logging: bool = True,
-    ) -> TypeParseIpmDb:
-
-        file_name: Optional[str] = None
-        bytes_file: Optional[memoryview] = None
-        parse_ipm: Optional[TypeIpm] = None
-        msg_count: Optional[int] = None
-
-        if self._file_infos:
-            file_name, bytes_file = self._file_infos
-            parse_ipm, msg_count = self._playload_ipm_file(raw=bytes_file)
-            if logging:
-                self._logging(file_name=file_name, row_count=msg_count, data=parse_ipm)
-
-            ipm_db: BeautifyIpmDb = BeautifyIpmDb(
-                template=mastercard_db, elements=parse_ipm
-            )
-
-            parse_db: List[List[TypeIpmDb]] = ipm_db.parse()
-
-            return parse_db, file_name
-
-        return None
-
-
-if __name__ == "__main__":
-    master = MC8583()
-    file = master.search_ipm(file_date="01/04/2026", cycle="CIC2")
-    parse = master.parse_ipm()
-    count = 0
-    if parse:
-        iso, name = parse
-        for i in iso:
-            if i["MTI"] == "1240":
-                count += 1
-        # print(count)

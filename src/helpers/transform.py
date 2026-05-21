@@ -22,7 +22,3 @@ def format_date(file_name: str) -> str:
 def format_space(text1: str, text2: str) -> str:
 
     return " " * (len(text1) - len(text2) + 7)
-
-
-if __name__ == "__main__":
-    print(format_date(file_name="CSU_ACQ_MASTER_OUTGOING_CIC2_01042026_200740"))

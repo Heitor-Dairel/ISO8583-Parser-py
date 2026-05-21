@@ -7,8 +7,6 @@ from typing import (
     Optional,
 )
 
-from rich import print
-
 from ..models import TupleManagerFile, TypeCycleIpm
 
 _BASE_DIR: Final[Path] = Path(
@@ -19,23 +17,6 @@ _FLAG_DIR: Final[str] = "(1)"
 
 
 class DateInvalidFormat(ValueError): ...
-
-
-def _validate_date(date: str) -> None:
-
-    formato: str = "%d/%m/%Y"
-    msg: str = f"Formato de data está inválido '{date}'"
-    try:
-        datetime.strptime(date, formato)
-    except ValueError as e:
-        raise DateInvalidFormat(msg) from e
-
-
-def _file_bytes(file_path: Path) -> memoryview:
-    data_bytes: bytes = file_path.read_bytes()
-    raw: memoryview = memoryview(data_bytes)
-
-    return raw
 
 
 def file_search(file_date: str, cycle: TypeCycleIpm) -> Optional[TupleManagerFile]:
@@ -56,7 +37,18 @@ def file_search(file_date: str, cycle: TypeCycleIpm) -> Optional[TupleManagerFil
     return next(file, None)
 
 
-if __name__ == "__main__":
-    arq = file_search(file_date="2/01/2026", cycle="CIC1")
+def _validate_date(date: str) -> None:
 
-    print(arq)
+    formato: str = "%d/%m/%Y"
+    msg: str = f"Formato de data está inválido '{date}'"
+    try:
+        datetime.strptime(date, formato)
+    except ValueError as e:
+        raise DateInvalidFormat(msg) from e
+
+
+def _file_bytes(file_path: Path) -> memoryview:
+    data_bytes: bytes = file_path.read_bytes()
+    raw: memoryview = memoryview(data_bytes)
+
+    return raw
