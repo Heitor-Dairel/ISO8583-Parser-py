@@ -9,6 +9,8 @@ class FieldDb:
         self.parse = parse
         self.custom: bool = custom
 
+        return None
+
     def parsing(self, data_element: str) -> TypeIpmDb:
 
         if self.name in {"DE063", "PDS0158"} and self.custom:
@@ -24,6 +26,8 @@ class TemplateDb:
 
     def __init__(self, fields: List[FieldDb]) -> None:
         self._field_by_name = {field.name: field for field in fields}
+
+        return None
 
     def get_field(self, name: str) -> FieldDb:
         return self._field_by_name[name]

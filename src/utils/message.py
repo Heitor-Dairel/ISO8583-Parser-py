@@ -44,18 +44,20 @@ class BeautifyIpmDb:
         self.elements: TypeIpm = elements
         self.template = template
 
+        return None
+
     def parse(
         self,
     ) -> List[List[TypeIpmDb]]:
 
-        parse_db: List[List[TypeIpmDb]] = []
-        parse_db_append = parse_db.append
+        db_parse: List[List[TypeIpmDb]] = []
+        db_append_parse = db_parse.append
 
         for message in self.elements:
             if message["MTI"] == "1240":
-                parse_db_append(self._loop_element(message=message))
+                db_append_parse(self._loop_element(message=message))
 
-        return parse_db
+        return db_parse
 
     def _loop_element(
         self,
@@ -65,8 +67,8 @@ class BeautifyIpmDb:
         key: Optional[str] = None
         value: Optional[str] = None
         data_element: Optional[TypeIpmDb] = None
-        parse_elements: List[TypeIpmDb] = []
-        parse_elements_append = parse_elements.append
+        elements_parse: List[TypeIpmDb] = []
+        elements_append_parse = elements_parse.append
 
         for element in self._DATA_ELEMENTS_MESSAGE:
             key = element[1]
@@ -75,9 +77,9 @@ class BeautifyIpmDb:
                 message=message, name=value, type_element=key
             )
 
-            parse_elements_append(data_element)
+            elements_append_parse(data_element)
 
-        return parse_elements
+        return elements_parse
 
     def _get_element(
         self,

@@ -50,12 +50,16 @@ class MC8583(DataLogging):
             text=self._TITLE, highlight=["Bold"], color_foreground="Orange1", end="\n"
         )
 
+        return None
+
     def search_ipm(self, file_date: str, cycle: TypeCycleIpm) -> None:
 
         self._file_date, self._cycle = file_date, cycle
         self._file_infos: Optional[TupleFileManager] = file_search(
             file_date=file_date, cycle=cycle
         )
+
+        return None
 
     def parse_ipm(
         self,
@@ -136,9 +140,10 @@ class MC8583(DataLogging):
         self._len_raw: int = len(raw)
         index: int = 0
         msg_count: int = 0
-        parse_mti: List[Dict[str, Any]] = []
+        mti_parse: TypeIpm = []
+        msg_parser: Dict[str, Any] = {}
         extract_iso = self._extract_iso_payload
-        append_mti = parse_mti.append
+        append_mti = mti_parse.append
 
         try:
             while index < self._len_raw:
@@ -147,19 +152,21 @@ class MC8583(DataLogging):
                 )
                 index += consumed
 
-                message_parser: Dict[str, Any] = iso8583.parse(
+                msg_parser = iso8583.parse(
                     message=payload, template=custom_mastercard, encoding="cp500"
                 )
 
-                append_mti(message_parser)
+                append_mti(msg_parser)
+
+                msg_parser.clear()
 
                 msg_count += 1
 
         except Exception as e:
-            msg_error = f"Erro na mensagem #{msg_count + 1} (offset {index})"
+            msg_error: str = f"Erro na mensagem #{msg_count + 1} (offset {index})"
             raise ISO8583ParseError(msg_error) from e
 
-        return parse_mti, msg_count
+        return mti_parse, msg_count
 
     def _logging(self, file_name: str, row_count: int, data: TypeIpm) -> None:
 

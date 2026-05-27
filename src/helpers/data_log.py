@@ -12,6 +12,7 @@ from ..models import TypeIpm
 class DataLogging:
     def __init__(self) -> None:
         self._output_path_abs: Path = self._output_path()
+        return None
 
     def logging_file(
         self, data: TypeIpm, file_name: str, type_logg: List[Literal["csv", "txt"]]

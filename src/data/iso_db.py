@@ -1,11 +1,12 @@
 import os
 from datetime import datetime
 from types import TracebackType
-from typing import Callable, Dict, List, Literal, Optional, Self, Tuple
+from typing import Callable, Dict, Final, List, Literal, Optional, Self, Tuple
 
 import psycopg
 from dotenv import load_dotenv
 from psycopg import Connection, ServerCursor
+from psycopg.abc import Query
 from psycopg.rows import TupleRow
 from rich import print
 
@@ -26,17 +27,17 @@ class DB8583:
     _user: Optional[str] = os.getenv("DB_USERNAME")
     _password: Optional[str] = os.getenv("DB_PASSWORD")
 
-    _FILE_EXISTS_SQL = """SELECT 1 
+    _FILE_EXISTS_SQL: Final[Query] = """SELECT 1 
                         FROM hdg.tb_master_arquivo tma 
                        WHERE tma.data_referencia = %s 
                          AND tma.ciclo = %s"""
 
-    _INSERT_SQL = """
+    _INSERT_SQL: Final[Query] = """
     INSERT INTO hdg.tb_master_arquivo (nome_arquivo, ciclo, data_referencia) 
     VALUES (%s, %s, %s) RETURNING id
     """
 
-    _COPY_SQL = """
+    _COPY_SQL: Final[Query] = """
     COPY hdg.tb_master_arquivo_detalhado (
         mti,
         numero_cartao,
@@ -80,6 +81,8 @@ class DB8583:
         self._cur: Optional[ServerCursor[TupleRow]] = None
         self._parse: MC8583 = MC8583()
 
+        return None
+
     def __enter__(self) -> Self:
         self.connect()
         return self
@@ -96,6 +99,8 @@ class DB8583:
 
         if exc_type is None:
             self.close()
+
+        return None
 
     def connect(
         self,
@@ -127,6 +132,8 @@ class DB8583:
             for exe in exec:
                 exe()
         self._conn, self._cur = None, None
+
+        return None
 
     def iso_db(
         self,
@@ -221,6 +228,8 @@ class DB8583:
                         end="",
                     )
             print("\n\n")
+
+            return None
 
     def _exists_file_master(
         self,
