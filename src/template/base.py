@@ -1,4 +1,4 @@
-from typing import Dict, List
+from typing import Dict, List, Set
 
 from ..models import TypeIpmDb
 
@@ -13,7 +13,9 @@ class FieldDb:
 
     def parsing(self, data_element: str) -> TypeIpmDb:
 
-        if self.name in {"DE063", "PDS0158"} and self.custom:
+        key_custom: Set[str] = {"DE063", "PDS0158"}
+
+        if self.name in key_custom and self.custom:
             return self.parse.field(
                 data_element=data_element, name=self.name, custom=self.custom
             )

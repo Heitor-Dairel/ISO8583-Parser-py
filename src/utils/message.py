@@ -42,7 +42,7 @@ class BeautifyIpmDb:
 
     def __init__(self, template: TemplateDb, elements: TypeIpm) -> None:
         self.elements: TypeIpm = elements
-        self.template = template
+        self.template: TemplateDb = template
 
         return None
 

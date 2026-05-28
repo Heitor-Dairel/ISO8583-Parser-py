@@ -42,9 +42,9 @@ class MC8583(DataLogging):
         self._file_date: Optional[str] = None
         self._cycle: Optional[str] = None
 
-        img: BaseImage = from_file(filepath=self._PATH)
-        img.set_size(width=34, height=10)
-        print(str(img).rstrip(), end="\n")
+        self._img: BaseImage = from_file(filepath=self._PATH)
+        self._img.set_size(width=34, height=10)
+        print(str(self._img).rstrip(), end="\n")
 
         print_custom_text(
             text=self._TITLE, highlight=["Bold"], color_foreground="Orange1", end="\n"
