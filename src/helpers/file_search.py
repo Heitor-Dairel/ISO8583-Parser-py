@@ -40,7 +40,7 @@ def file_search(file_date: str, file_cycle: TypeCycleIpm) -> Optional[TupleFileM
 def _validate_date(date: str) -> None:
 
     FORMATO: Final[str] = "%d/%m/%Y"
-    msg_error: str = f"Formato de data está inválido '{date}'"
+    msg_error: str = f"Formato de data inválido: '{date}'"
     try:
         datetime.strptime(date, FORMATO)
     except ValueError as e:
