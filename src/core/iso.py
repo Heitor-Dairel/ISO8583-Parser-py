@@ -72,7 +72,7 @@ class MC8583(DataLogging):
         msg_count: Optional[int] = None
         if self._file_infos:
             file_name, file_bytes = self._file_infos
-            parse_ipm, msg_count = self._playload_ipm_file(raw=file_bytes)
+            parse_ipm, msg_count = self._playload_iso_file(raw=file_bytes)
             if logging:
                 self._logging(file_name=file_name, row_count=msg_count, data=parse_ipm)
 
@@ -92,7 +92,7 @@ class MC8583(DataLogging):
 
         if self._file_infos:
             file_name, file_bytes = self._file_infos
-            parse_ipm, msg_count = self._playload_ipm_file(raw=file_bytes)
+            parse_ipm, msg_count = self._playload_iso_file(raw=file_bytes)
             if logging:
                 self._logging(file_name=file_name, row_count=msg_count, data=parse_ipm)
 
@@ -135,7 +135,7 @@ class MC8583(DataLogging):
 
         return bytes(payload), index_current - start
 
-    def _playload_ipm_file(self, raw: memoryview) -> Tuple[TypeIpm, int]:
+    def _playload_iso_file(self, raw: memoryview) -> Tuple[TypeIpm, int]:
 
         self._len_raw: int = len(raw)
         index: int = 0
