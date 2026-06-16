@@ -54,7 +54,7 @@ class DataLogging:
         df: DataFrame = pl.DataFrame(data=data_csv).unnest("PDS")
         df = df.with_row_index("ID", offset=1)
         df.write_csv(
-            self._output_path_abs / f"{file_name}.csv",
+            self._output_path_abs / f"{file_name}.CSV",
             separator=";",
             decimal_comma=True,
         )
@@ -65,7 +65,7 @@ class DataLogging:
 
         json_dict: Optional[str] = None
         with open(
-            self._output_path_abs / f"{file_name}.txt.log", "w", encoding="utf-8"
+            self._output_path_abs / f"{file_name}.TXT.LOG", "w", encoding="utf-8"
         ) as arquivo:
             for i in data:
                 json_dict = json.dumps(i, indent=4, ensure_ascii=False)
