@@ -4,16 +4,16 @@
   <br>
 </p>
 
-# 💳 Mastercard ISO8583-1993 Parser (Python)
+# Mastercard ISO8583-1993 Parser (Python)
 
 A Python parser developed for reading and interpreting messages in the **ISO8583-1993** standard, with a focus on **Mastercard** files.
 
-## 📌 About the Project
+## About the Project
 
 This project aims to parse ISO8583 messages, converting raw data (typically from files or streams) into understandable and manipulable structures in Python.
 It was designed to facilitate analyses, reconciliations, and integrations with financial systems.
 
-## ⚙️ Features
+## Features
 
 - Reading of ISO8583 messages (Mastercard)
 - Interpretation of:
@@ -24,7 +24,7 @@ It was designed to facilitate analyses, reconciliations, and integrations with f
 - Ready structure for expanding new fields
 - Conversion to Python objects (dict / classes)
 
-## 🧠 How It Works
+## How It Works
 
 The parser performs the following steps:
 1. Identifies the **MTI**
@@ -34,7 +34,7 @@ The parser performs the following steps:
    - Size
    - Format
 
-## 🛠️ Technologies Used
+## Technologies Used
 
 - Python 3.x
 - Typing with `typing`
@@ -42,10 +42,10 @@ The parser performs the following steps:
 - Starkbank library for final parsing of elements
 - (Optional) Integration with database (PostgreSQL)
 
-## 📄 License
+## License
 
 This project is under the [MIT license](LICENSE).
 
-## 👨🏻‍💻 Author
+## Author
 
 Developed by **Heitor Dairel**
