@@ -5,40 +5,39 @@ from ..template import FieldDb, TemplateDb
 
 
 class BeautifyIpmDb:
-    _DATA_ELEMENTS_MESSAGE: Final[TypeElementsIpm] = [
-        ["MTI", "DE"],
-        ["DE002", "DE"],
-        ["DE003", "DE"],
-        ["DE004", "DE"],
-        ["DE012", "DE"],
-        ["DE014", "DE"],
-        ["DE022", "DE"],
-        ["DE023", "DE"],
-        ["DE024", "DE"],
-        ["DE025", "DE"],
-        ["DE026", "DE"],
-        ["DE031", "DE"],
-        ["DE033", "DE"],
-        ["DE038", "DE"],
-        ["DE040", "DE"],
-        ["DE041", "DE"],
-        ["DE042", "DE"],
-        ["DE043", "DE"],
-        ["DE049", "DE"],
-        ["DE063", "DE"],
-        ["DE093", "DE"],
-        ["DE094", "DE"],
-        ["PDS0023", "PDS"],
-        ["PDS0052", "PDS"],
-        ["PDS0148", "PDS"],
-        ["PDS0158", "PDS"],
-        ["PDS0165", "PDS"],
-        ["PDS0170", "PDS"],
-        ["PDS0220", "PDS"],
-        ["PDS0375", "PDS"],
-        ["DE063", "DE"],
-        ["PDS0158", "PDS"],
-    ]
+    _DATA_ELEMENTS_MESSAGE: Final[TypeElementsIpm] = {
+        "MTI": "DE",
+        "DE002": "DE",
+        "DE003": "DE",
+        "DE004": "DE",
+        "DE012": "DE",
+        "DE014": "DE",
+        "DE022": "DE",
+        "DE023": "DE",
+        "DE024": "DE",
+        "DE025": "DE",
+        "DE026": "DE",
+        "DE031": "DE",
+        "DE033": "DE",
+        "DE038": "DE",
+        "DE040": "DE",
+        "DE041": "DE",
+        "DE042": "DE",
+        "DE043": "DE",
+        "DE049": "DE",
+        "DE063": "DE",
+        "DE093": "DE",
+        "DE094": "DE",
+        "PDS0023": "PDS",
+        "PDS0027": "PDS",
+        "PDS0052": "PDS",
+        "PDS0148": "PDS",
+        "PDS0158": "PDS",
+        "PDS0165": "PDS",
+        "PDS0170": "PDS",
+        "PDS0220": "PDS",
+        "PDS0375": "PDS",
+    }
 
     def __init__(self, template: TemplateDb, elements: TypeIpm) -> None:
         self.elements: TypeIpm = elements
@@ -64,17 +63,13 @@ class BeautifyIpmDb:
         message: Dict[str, Any],
     ) -> List[TypeIpmDb]:
 
-        key: Optional[str] = None
-        value: Optional[str] = None
         data_element: Optional[TypeIpmDb] = None
         elements_parse: List[TypeIpmDb] = []
         elements_append_parse = elements_parse.append
 
-        for element in self._DATA_ELEMENTS_MESSAGE:
-            key = element[1]
-            value = element[0]
+        for key, value in self._DATA_ELEMENTS_MESSAGE.items():
             data_element = self._get_element(
-                message=message, name=value, type_element=key
+                message=message, name=key, type_element=value
             )
 
             elements_append_parse(data_element)

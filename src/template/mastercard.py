@@ -37,6 +37,7 @@ mastercard_db: TemplateDb = TemplateDb(
         FieldDb(name="DE093", parse=ParseStringDb()),
         FieldDb(name="DE094", parse=ParseStringDb()),
         FieldDb(name="PDS0023", parse=ParseStringDb()),
+        FieldDb(name="PDS0027", parse=ParseStringDb()),
         FieldDb(name="PDS0052", parse=ParseStringDb()),
         FieldDb(name="PDS0148", parse=ParseStringDb()),
         FieldDb(name="PDS0158", parse=ParseStringDb()),
@@ -44,7 +45,5 @@ mastercard_db: TemplateDb = TemplateDb(
         FieldDb(name="PDS0170", parse=ParseStringDb()),
         FieldDb(name="PDS0220", parse=ParseStringDb()),
         FieldDb(name="PDS0375", parse=ParseStringDb()),
-        FieldDb(name="DE063", parse=ParseStringDb(), custom=True),
-        FieldDb(name="PDS0158", parse=ParseStringDb(), custom=True),
     ]
 )

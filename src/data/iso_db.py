@@ -29,8 +29,10 @@ class DB8583:
 
     _FILE_EXISTS_SQL: Final[Query] = """SELECT 1 
                         FROM hdg.tb_master_arquivo tma 
-                       WHERE tma.data_referencia = %s 
-                         AND tma.ciclo = %s"""
+                       WHERE 1 = 1
+                         AND tma.data_referencia = %s 
+                         AND tma.ciclo = %s
+                         AND tma.deletado = 0"""
 
     _INSERT_SQL: Final[Query] = """
     INSERT INTO hdg.tb_master_arquivo (nome_arquivo, ciclo, data_referencia) 
@@ -62,6 +64,7 @@ class DB8583:
         id_destino_instituicao_transacao,
         id_originadora_instituicao_transacao,
         tipo_terminal,
+        codigo_flex,
         ind_nivel_seguranca_comercio_eletronico,
         expoente_moeada,
         atividade_comercial,
@@ -69,8 +72,6 @@ class DB8583:
         info_consulta_aceitante,
         id_fiscal_est_comercial_brasil,
         ind_1_conciliacao_membro,
-        produto,
-        ird,
         tb_master_arquivo_id
     )
     FROM STDIN

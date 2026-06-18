@@ -5,7 +5,7 @@ type TypeIpm = List[Dict[str, Any]]
 type TypeParseIpm = Optional[Tuple[TypeIpm, str]]
 type TypeCycleIpm = Literal["CIC1", "CIC2", "CIC3"]
 type TypeParseIpmDb = Optional[Tuple[List[List[TypeIpmDb]], str]]
-type TypeElementsIpm = List[List[str]]
+type TypeElementsIpm = Dict[str, str]
 
 
 class CompMC8583:

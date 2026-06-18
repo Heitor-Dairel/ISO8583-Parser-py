@@ -17,11 +17,6 @@ class ParseStringDb:
     def __init__(self) -> None: ...
 
     def field(self, data_element: str, name: str, custom: bool = False) -> str:
-        if custom and name == "DE063":
-            return data_element[:3]
-
-        if custom and name == "PDS0158":
-            return data_element[:2]
 
         return data_element
 
