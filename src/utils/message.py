@@ -1,7 +1,6 @@
 from typing import Any, Dict, Final, List, Optional
 
 from ..models import TypeElementsIpm, TypeIpm, TypeIpmDb
-from ..template import FieldDb, TemplateDb
 
 
 class BeautifyIpmDb:
@@ -39,9 +38,8 @@ class BeautifyIpmDb:
         "PDS0375": "PDS",
     }
 
-    def __init__(self, template: TemplateDb, elements: TypeIpm) -> None:
+    def __init__(self, elements: TypeIpm) -> None:
         self.elements: TypeIpm = elements
-        self.template: TemplateDb = template
 
         return None
 
@@ -84,16 +82,11 @@ class BeautifyIpmDb:
     ) -> TypeIpmDb:
 
         data_element: Optional[str] = None
-        element_ipm: Optional[FieldDb] = None
 
         if type_element == "DE":
             data_element = message.get(name)
 
         if type_element == "PDS":
             data_element = message[type_element].get(name)
-
-        if data_element:
-            element_ipm = self.template.get_field(name=name)
-            return element_ipm.parsing(data_element=data_element.strip())
 
         return data_element

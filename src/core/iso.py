@@ -20,7 +20,7 @@ from ..models import (
     TypeParseIpm,
     TypeParseIpmDb,
 )
-from ..template import custom_mastercard, mastercard_db
+from ..template import custom_mastercard
 from ..utils import BeautifyIpmDb, print_custom_text
 
 
@@ -96,9 +96,7 @@ class MC8583(DataLogging):
             if logging:
                 self._logging(file_name=file_name, row_count=msg_count, data=parse_ipm)
 
-            ipm_db: BeautifyIpmDb = BeautifyIpmDb(
-                template=mastercard_db, elements=parse_ipm
-            )
+            ipm_db: BeautifyIpmDb = BeautifyIpmDb(elements=parse_ipm)
 
             parse_db: List[List[TypeIpmDb]] = ipm_db.parse()
 
