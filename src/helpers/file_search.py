@@ -49,6 +49,6 @@ def _validate_date(date: str) -> None:
 
 def _file_bytes(file_path: Path) -> memoryview:
     data_bytes: bytes = file_path.read_bytes()
-    raw: memoryview = memoryview(data_bytes)
+    data: memoryview = memoryview(data_bytes)
 
-    return raw
+    return data

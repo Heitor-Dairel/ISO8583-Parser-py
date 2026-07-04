@@ -38,7 +38,7 @@ class MC8583(DataLogging):
         super().__init__()
 
         self._file_info: Optional[TupleFileManager] = None
-        self._len_raw: int = 0
+        self._len_data: int = 0
         self._file_date: Optional[str] = None
         self._file_cycle: Optional[str] = None
 
@@ -72,7 +72,7 @@ class MC8583(DataLogging):
         msg_count: Optional[int] = None
         if self._file_infos:
             file_name, file_bytes = self._file_infos
-            parse_ipm, msg_count = self._playload_iso_file(raw=file_bytes)
+            parse_ipm, msg_count = self._playload_iso_file(data=file_bytes)
             if logging:
                 self._logging(file_name=file_name, row_count=msg_count, data=parse_ipm)
 
@@ -92,7 +92,7 @@ class MC8583(DataLogging):
 
         if self._file_infos:
             file_name, file_bytes = self._file_infos
-            parse_ipm, msg_count = self._playload_iso_file(raw=file_bytes)
+            parse_ipm, msg_count = self._playload_iso_file(data=file_bytes)
             if logging:
                 self._logging(file_name=file_name, row_count=msg_count, data=parse_ipm)
 
@@ -105,7 +105,7 @@ class MC8583(DataLogging):
         return None
 
     def _extract_iso_payload(
-        self, raw: memoryview, index: int, len_raw: int
+        self, data: memoryview, index: int, len_data: int
     ) -> Tuple[bytes, int]:
 
         start: int = index
@@ -114,28 +114,28 @@ class MC8583(DataLogging):
         payload_extend = payload.extend
 
         while True:
-            if index_current + 4 > len_raw:
+            if index_current + 4 > len_data:
                 break
 
-            seg_id: int = raw[index_current + 2] & 0xFF
-            seg_len: int = ((raw[index_current] & 0xFF) << 8) | (
-                raw[index_current + 1] & 0xFF
+            seg_id: int = data[index_current + 2] & 0xFF
+            seg_len: int = ((data[index_current] & 0xFF) << 8) | (
+                data[index_current + 1] & 0xFF
             )
 
             payload_len: int = seg_len - 4
-            payload_extend(raw[index_current + 4 : index_current + 4 + payload_len])
+            payload_extend(data[index_current + 4 : index_current + 4 + payload_len])
             index_current += 4 + payload_len
 
             if not seg_id:
                 break
-            if index_current + 2 < len_raw and raw[index_current + 2] == 0:
+            if index_current + 2 < len_data and data[index_current + 2] == 0:
                 break
 
         return bytes(payload), index_current - start
 
-    def _playload_iso_file(self, raw: memoryview) -> Tuple[TypeIpm, int]:
+    def _playload_iso_file(self, data: memoryview) -> Tuple[TypeIpm, int]:
 
-        self._len_raw: int = len(raw)
+        self._len_data: int = len(data)
         index: int = 0
         msg_count: int = 0
         mti_parse: TypeIpm = []
@@ -144,9 +144,9 @@ class MC8583(DataLogging):
         append_mti = mti_parse.append
 
         try:
-            while index < self._len_raw:
+            while index < self._len_data:
                 payload, consumed = extract_iso(
-                    raw=raw, index=index, len_raw=self._len_raw
+                    data=data, index=index, len_data=self._len_data
                 )
                 index += consumed
 
@@ -172,7 +172,7 @@ class MC8583(DataLogging):
             f" ◉ 📄 File Name  {CompMC8583.SIDE} {file_name}",
             f" ◉ 📄 File Date  {CompMC8583.SIDE} {format_date(file_name=file_name)}",
             f" ◉ 📄 File Cycle {CompMC8583.SIDE} {self._file_cycle}",
-            f" ◉ 📄 File Size  {CompMC8583.SIDE} {format_size(self._len_raw)}",
+            f" ◉ 📄 File Size  {CompMC8583.SIDE} {format_size(self._len_data)}",
             f" ◉ 📄 File Row   {CompMC8583.SIDE} {row_count_format}",
         ]
 
