@@ -48,4 +48,5 @@ This project is under the [MIT license](LICENSE).
 
 ## Author
 
-Developed by **Heitor Dairel**
+Developed by **Heitor Dairel**  
+[GitHub](https://github.com/heitor-dairel) · [LinkedIn](https://linkedin.com/in/heitor-dairel)
