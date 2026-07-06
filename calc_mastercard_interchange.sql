@@ -1,4 +1,3 @@
---DROP FUNCTION hdg.calc_mastercard_interchange(varchar, varchar, varchar, varchar, numeric);
 SELECT *
 FROM hdg.tb_master_categoria_produto;
 
