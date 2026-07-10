@@ -1,3 +1,5 @@
+import os
+import sys
 from datetime import datetime
 from pathlib import Path
 from typing import (
@@ -7,12 +9,19 @@ from typing import (
     Optional,
 )
 
+from dotenv import load_dotenv
+
 from ..models import TupleFileManager, TypeCycleIpm
 
-_BASE_DIR: Final[Path] = Path(
-    r"C:\Users\heitor.tavares\OneDrive - TRIVALE ADMINISTRACAO LTDA"
-    r"\Operação Processadora - Arquivos CSU"
-)
+load_dotenv()
+
+dir_path = os.getenv("DIR_PATH")
+
+if not dir_path:
+    sys.exit()
+
+
+_BASE_DIR: Final[Path] = Path(dir_path)
 _FLAG_DIR: Final[str] = "(1)"
 
 
