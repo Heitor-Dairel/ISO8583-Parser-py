@@ -196,7 +196,7 @@ class MC8583(DataLogging):
             f"    {CompMC8583.FOOTER_CONTOUR}"
         )
 
-        self.logging_file(data=data, file_name=file_name, type_logg=["csv", "txt"])
+        self.logging_file(data=data, file_name=file_name, type_log=["csv", "txt"])
 
         print(body)
 

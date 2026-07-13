@@ -15,13 +15,13 @@ class DataLogging:
         return None
 
     def logging_file(
-        self, data: TypeIpm, file_name: str, type_logg: List[Literal["csv", "txt"]]
+        self, data: TypeIpm, file_name: str, type_log: List[Literal["csv", "txt"]]
     ) -> None:
 
-        if "csv" in type_logg:
+        if "csv" in type_log:
             self._logging_csv(data=data, file_name=file_name)
 
-        if "txt" in type_logg:
+        if "txt" in type_log:
             self._logging_txt(data=data, file_name=file_name)
 
         return None

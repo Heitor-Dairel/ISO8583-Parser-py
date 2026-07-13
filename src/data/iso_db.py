@@ -123,14 +123,14 @@ class DB8583:
     def close(
         self,
     ) -> None:
-        exec: Optional[List[Callable[[], None]]] = None
+        exec_list: Optional[List[Callable[[], None]]] = None
         if self._conn and self._cur:
-            exec = [
+            exec_list = [
                 self._conn.commit,
                 self._cur.close,
                 self._conn.close,
             ]
-            for exe in exec:
+            for exe in exec_list:
                 exe()
         self._conn, self._cur = None, None
 
