@@ -32,11 +32,11 @@ FROM
 	hdg.tb_master_mcc;
 
 
---preços mastercard
+--calculo mastercard
 SELECT
 	*
 FROM
-	hdg.tb_master_preco;
+	hdg.tb_master_calculo;
 
 
 --produtos mastercard
@@ -88,35 +88,35 @@ v_valor NUMERIC(16, 2) := (p_valor::NUMERIC) / 100;
 
 BEGIN
     SELECT
-	Round(tmp.taxa_incremental + (v_valor * (tmp.percentual_custo_bandeira + tmp.ajuste_percentual_custo_bandeira + tmp.ajuste_parcela + tmp.ajuste_digital_parcela)) / 100, 2),
-	tmp.custo_teto_bandeira
+	Round(tmc.taxa_incremental + (v_valor * (tmc.percentual_custo_bandeira + tmc.ajuste_percentual_custo_bandeira + tmc.ajuste_parcela + tmc.ajuste_digital_parcela)) / 100, 2),
+	tmc.custo_teto_bandeira
     INTO
 	v_custo_bandeira,
 	v_teto_bandeira
 FROM
-	hdg.tb_master_preco tmp
+	hdg.tb_master_calculo tmc
 INNER JOIN hdg.tb_master_produto tmp2 ON
-	tmp2.ird_id = tmp.ird_id
-	AND tmp2.grupo_produto_id = tmp.grupo_produto_id
-	AND tmp2.categoria_produto_id = tmp.categoria_produto_id
-	AND tmp2.sub_categoria_produto_id = tmp.sub_categoria_produto_id
+	tmp2.ird_id = tmc.ird_id
+	AND tmp2.grupo_produto_id = tmc.grupo_produto_id
+	AND tmp2.categoria_produto_id = tmc.categoria_produto_id
+	AND tmp2.sub_categoria_produto_id = tmc.sub_categoria_produto_id
 	AND tmp2.deletado = 0
 INNER JOIN hdg.tb_master_mcc tmm ON
-	tmm.segmento_id = tmp.segmento_id
-	AND tmm.flag_mcc_id = tmp.flag_mcc_id
+	tmm.segmento_id = tmc.segmento_id
+	AND tmm.flag_mcc_id = tmc.flag_mcc_id
 	AND tmm.deletado = 0
 INNER JOIN hdg.tb_master_ird tmi ON
-	tmi.id = tmp.ird_id
+	tmi.id = tmc.ird_id
 	AND tmi.deletado = 0
 WHERE
 	1 = 1
-	AND tmp.deletado = 0
+	AND tmc.deletado = 0
 	AND tmm.codigo = v_mcc
 	AND tmp2.produto = v_produto
 	AND tmi.ird = p_ird
-	AND v_valor BETWEEN tmp.valor_transacao_inicial AND tmp.valor_transacao_final
+	AND v_valor BETWEEN tmc.valor_transacao_inicial AND tmc.valor_transacao_final
 ORDER BY
-	tmp.especial DESC
+	tmc.especial DESC
 LIMIT 1;
 
 IF v_teto_bandeira > 0
